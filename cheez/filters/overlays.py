@@ -2,6 +2,10 @@ from cheez.types import ImageInfo, Namespace
 from cheez.fs import read_file
 from PIL import Image, ImageDraw, ImageFont
 import io
+import random
+import glob
+import os.path
+import os
 
 
 MIN_FONT_SIZE = 5
@@ -32,6 +36,14 @@ def thru_overlay_text(image: ImageInfo, args: Namespace)-> ImageInfo:
 
     font_size = _interpret_value(args.font_size, scale)
     font_name = args.font
+
+    if '*' in font_name:  # Interpret as a glob
+        font_name = random.choice(glob.glob(font_name))
+    elif os.path.isdir(font_name):
+        font_name = random.choice(
+            [x for x in (os.path.join(font_name, x) for x in os.listdir(font_name))
+             if os.path.isfile(x)]
+        )
 
     if font_name:
         font = ImageFont.truetype(font_name, font_size)

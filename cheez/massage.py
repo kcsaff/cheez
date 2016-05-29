@@ -26,10 +26,13 @@ class Masseuse(object):
         return image
 
     def name(self, image):
-        if image.bytes and not image.filename:
+        if image.bytes and not image.format:
             ext = imghdr.what(None, h=image.bytes)
             if ext:
-                image = image._replace(filename='image.{}'.format(ext))
+                image = image._replace(format=ext)
+        if image.format and not image.filename:
+            image = image._replace(filename='image.{}'.format(image.format))
+
         if image.filename and not image.title:
             image = image._replace(title=image.filename)
         if image.title and not image.description:
